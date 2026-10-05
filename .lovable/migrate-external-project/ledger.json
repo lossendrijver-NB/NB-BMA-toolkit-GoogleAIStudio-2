@@ -1,0 +1,86 @@
+[
+  {
+    "capability": "code",
+    "source": "GitHub nobears-bma",
+    "outcome": "copy",
+    "status": "in_progress",
+    "next_action": "Match Figma and verify"
+  },
+  {
+    "capability": "schema",
+    "source": "Local typed dataset",
+    "outcome": "preserve",
+    "status": "in_progress",
+    "next_action": "Copy byte-for-byte"
+  },
+  {
+    "capability": "records",
+    "source": "src/content/data.ts",
+    "outcome": "preserve",
+    "status": "in_progress",
+    "next_action": "Verify source checksum"
+  },
+  {
+    "capability": "auth identities",
+    "source": "No auth code or user store",
+    "outcome": "not_applicable",
+    "status": "verified",
+    "next_action": "None"
+  },
+  {
+    "capability": "authorization",
+    "source": "Read-only local content",
+    "outcome": "preserve",
+    "status": "verified",
+    "next_action": "None"
+  },
+  {
+    "capability": "uploaded file bytes",
+    "source": "Source asset pointers and bundled JPGs",
+    "outcome": "copy",
+    "status": "in_progress",
+    "next_action": "Transfer images to this project"
+  },
+  {
+    "capability": "external providers",
+    "source": "No runtime providers detected",
+    "outcome": "not_applicable",
+    "status": "verified",
+    "next_action": "None"
+  },
+  {
+    "capability": "public endpoints callbacks webhooks schedules",
+    "source": "None detected",
+    "outcome": "not_applicable",
+    "status": "verified",
+    "next_action": "None"
+  },
+  {
+    "capability": "secrets",
+    "source": "None detected",
+    "outcome": "not_applicable",
+    "status": "verified",
+    "next_action": "None"
+  },
+  {
+    "capability": "Notion future import",
+    "source": "NB-BMA-Toolkit requested for later",
+    "outcome": "prepare_add_only",
+    "status": "in_progress",
+    "next_action": "Provide non-mutating import preview boundary; no connection or import now"
+  },
+  {
+    "capability": "cutover",
+    "source": "Source repository remains untouched",
+    "outcome": "copy_only",
+    "status": "verified",
+    "next_action": "Publishing not requested"
+  },
+  {
+    "capability": "verification",
+    "source": "Search and detail flows",
+    "outcome": "verify",
+    "status": "in_progress",
+    "next_action": "Browser checks and tests"
+  }
+]
