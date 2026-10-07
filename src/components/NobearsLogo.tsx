@@ -83,21 +83,21 @@ export function NobearsLogo() {
           De ruimte tussen logo en tekst (voorheen `gap`) zit nu als padding binnen het
           inklapbare deel, zodat die mee verdwijnt op vervolgpagina's. */}
       <span
-  aria-hidden={!isHome}
-  className={cn(
-    "grid transition-[grid-template-columns,opacity] duration-300 ease-out motion-reduce:transition-none",
-    showTagline ? "grid-cols-[1fr] opacity-100" : "grid-cols-[0fr] opacity-0",
-  )}
-  >
-  <span className="min-w-0 overflow-hidden">
-    <span
-         className={cn(
-         "block whitespace-nowrap pl-3 sm:pl-4 text-sm text-foreground/90 transition-transform duration-300 ease-out motion-reduce:transition-none",
-           showTagline ? "translate-x-0" : "-translate-x-2",
-             )}
-             >
-             Business &amp; Market Activation
-           </span>
+        aria-hidden={!isHome}
+        className={cn(
+          "grid transition-[grid-template-columns,opacity] duration-300 ease-out motion-reduce:transition-none",
+          showTagline ? "grid-cols-[1fr] opacity-100" : "grid-cols-[0fr] opacity-0",
+        )}
+      >
+        <span className="min-w-0 overflow-hidden">
+          <span
+            className={cn(
+              "block whitespace-nowrap pl-3 sm:pl-4 text-sm text-foreground/90 transition-transform duration-300 ease-out motion-reduce:transition-none",
+              showTagline ? "translate-x-0" : "-translate-x-2",
+            )}
+          >
+            Business &amp; Market Activation
+          </span>
         </span>
       </span>
     </Link>

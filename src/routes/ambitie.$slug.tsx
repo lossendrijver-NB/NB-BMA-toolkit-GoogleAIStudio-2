@@ -48,7 +48,7 @@ function AmbitionPage() {
       <DetailLayout
         back={<BackButton to="/" />}
         title={ambition.title}
-        intro={ambition.shortDescription}
+        intro={ambition.korteIntro || ambition.shortIntro || ambition.shortDescription}
         body={ambition.description}
         aside={contact && <ContactCard person={contact} />}
         sectionTitle="Onze diensten die op deze ambitie aansluiten"

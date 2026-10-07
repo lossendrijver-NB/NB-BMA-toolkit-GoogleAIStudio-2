@@ -45,6 +45,7 @@ export function SearchExperience({
   const [focused, setFocused] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [intro, setIntro] = useState(!compact);
+  const [expandedSuggestions, setExpandedSuggestions] = useState(false);
   const manualLock = useRef<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
@@ -124,6 +125,10 @@ export function SearchExperience({
     return () => clearTimeout(t);
   }, [intro]);
 
+  useEffect(() => {
+    setExpandedSuggestions(false);
+  }, [mode, query]);
+
   // Debounced auto-detection of content type.
   useEffect(() => {
     if (!query.trim()) return;
@@ -168,10 +173,18 @@ export function SearchExperience({
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "ArrowDown" && items.length) {
       e.preventDefault();
-      setActive((i) => (i + 1) % items.length);
+      setActive((i) => {
+        const next = (i + 1) % items.length;
+        if (next >= 2) setExpandedSuggestions(true);
+        return next;
+      });
     } else if (e.key === "ArrowUp" && items.length) {
       e.preventDefault();
-      setActive((i) => (i <= 0 ? items.length - 1 : i - 1));
+      setActive((i) => {
+        const next = i <= 0 ? items.length - 1 : i - 1;
+        if (next >= 2) setExpandedSuggestions(true);
+        return next;
+      });
     } else if (e.key === "Escape") {
       if (active >= 0) setActive(-1);
       else {
@@ -253,7 +266,9 @@ export function SearchExperience({
           />
 
           {/* Input + shimmer-overlay. De echte placeholder is transparant,
-              de overlay-tekst eroverheen krijgt het shimmer-effect. */}
+              de overlay-tekst eroverheen krijgt het shimmer-effect.
+              Op de homepage staat de shimmer op volle sterkte; in de compacte
+              balk (vervolgpagina's) wordt hij rustiger (zie .placeholder-shimmer--calm in de CSS). */}
           <div className="relative flex min-w-0 flex-1 items-center">
             <input
               ref={inputRef}
@@ -290,10 +305,20 @@ export function SearchExperience({
                   compact && "compact-input",
                 )}
               >
-                <span className="placeholder-shimmer truncate min-[900px]:hidden">
+                <span
+                  className={cn(
+                    "placeholder-shimmer truncate min-[900px]:hidden",
+                    compact && "placeholder-shimmer--calm",
+                  )}
+                >
                   {placeholderShort}
                 </span>
-                <span className="placeholder-shimmer hidden truncate min-[900px]:inline">
+                <span
+                  className={cn(
+                    "placeholder-shimmer hidden truncate min-[900px]:inline",
+                    compact && "placeholder-shimmer--calm",
+                  )}
+                >
                   {placeholderFull}
                 </span>
               </span>
@@ -358,10 +383,7 @@ export function SearchExperience({
                     <span
                       key={m}
                       aria-hidden={m !== mode}
-                      className={cn(
-                        "col-start-1 row-start-1 text-left",
-                        m !== mode && "invisible",
-                      )}
+                      className={cn("col-start-1 row-start-1 text-left", m !== mode && "invisible")}
                     >
                       {LABEL[m]}
                     </span>
@@ -437,7 +459,7 @@ export function SearchExperience({
             aria-label="Suggesties"
             className="mt-3 flex flex-wrap gap-x-2 gap-y-1.5"
           >
-            {items.map((item, i) => (
+            {(expandedSuggestions ? items : items.slice(0, 2)).map((item, i) => (
               <li
                 key={item.id}
                 id={`${listId}-${i}`}
@@ -462,6 +484,38 @@ export function SearchExperience({
                 </Button>
               </li>
             ))}
+
+            {!expandedSuggestions && items.length > 2 && (
+              <li className={cn("min-w-0", intro && "chip-intro")}>
+                <Button
+                  variant="ghost"
+                  type="button"
+                  tabIndex={0}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => setExpandedSuggestions(true)}
+                  className="suggestion-chip px-3.5 font-medium text-foreground/90 transition-all duration-200 hover:border-[#F65C46] hover:bg-[#F65C46]/15 hover:text-white cursor-pointer"
+                  aria-label={`Toon nog ${items.length - 2} voorgestelde resultaten`}
+                >
+                  +{items.length - 2}
+                </Button>
+              </li>
+            )}
+
+            {expandedSuggestions && items.length > 2 && (
+              <li className="min-w-0">
+                <Button
+                  variant="ghost"
+                  type="button"
+                  tabIndex={0}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => setExpandedSuggestions(false)}
+                  className="suggestion-chip px-3 text-xs opacity-70 hover:opacity-100 transition-all duration-200 hover:border-[#F65C46] hover:bg-[#F65C46]/15 hover:text-white cursor-pointer"
+                  aria-label="Minder suggesties tonen"
+                >
+                  Minder tonen
+                </Button>
+              </li>
+            )}
           </ul>
           <p className="sr-only">
             Gebruik pijltjestoetsen om een suggestie te kiezen en Enter om te openen.

@@ -7,7 +7,7 @@ import { previewNotionAdditions } from "@/content/import-preview";
 describe("NOBEARS knowledge system", () => {
   it("keeps all source records and explicit relations", () => {
     expect([ambitions.length, services.length, cases.length, contacts.length]).toEqual([
-      11, 11, 5, 3,
+      12, 11, 6, 3,
     ]);
     for (const ambition of ambitions)
       expect(serviceRepo.forAmbition(ambition).map((s) => s.id)).toEqual(ambition.serviceIds);
@@ -19,6 +19,7 @@ describe("NOBEARS knowledge system", () => {
   it("matches typos, synonyms and smart modes without random navigation", () => {
     expect(rank("huisstijll", services)[0]?.item.slug).toBe("huisstijl");
     expect(rank("logo", services)[0]?.item.slug).toBe("huisstijl");
+    expect(rank("propositie", ambitions)[0]?.item.slug).toBe("een-sterk-merk-neerzetten");
     expect(detectMode("Huisstijl", "ambition", ambitions, services).mode).toBe("service");
     expect(detectMode("Een sterk merk neerzetten", "service", ambitions, services).mode).toBe(
       "ambition",

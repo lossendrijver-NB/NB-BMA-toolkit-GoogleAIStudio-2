@@ -63,7 +63,7 @@ function ServicePage() {
           )
         }
         title={service.title}
-        intro={service.shortDescription}
+        intro={service.korteIntro || service.shortIntro || service.shortDescription}
         body={service.description}
         aside={contact && <ContactCard person={contact} />}
         sectionTitle="Cases"

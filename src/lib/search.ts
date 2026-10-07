@@ -8,6 +8,10 @@ export type Searchable = {
   slug: string;
   searchTerms: string[];
   shortDescription: string;
+  shortIntro?: string;
+  korteIntro?: string;
+  extraKeywords?: string[] | string;
+  extraZoekwoorden?: string[] | string;
 };
 
 export type ScoredResult<T> = { item: T; score: number };
@@ -70,17 +74,34 @@ const STOP = new Set([
   "we",
 ]);
 
-/** Score 0..100. Priority: exact title > strong title > exact term > partial > fuzzy > description. */
+/** Score 0..100. Priority: exact title > strong title > exact extra keyword > exact term > partial > fuzzy > description. */
 export function scoreItem(query: string, item: Searchable): number {
   const q = normalize(query);
   if (!q) return 0;
   const title = normalize(item.title);
   const slug = item.slug.replace(/-/g, " ");
-  const terms = item.searchTerms.map(normalize);
+
+  // Extract extra keywords (can be comma-separated string or array, under extraKeywords or extraZoekwoorden)
+  const rawExtra = item.extraZoekwoorden || item.extraKeywords;
+  const extraList: string[] = Array.isArray(rawExtra)
+    ? rawExtra
+    : typeof rawExtra === "string"
+      ? rawExtra
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+  const extraTerms = extraList.map(normalize);
+
+  const baseTerms = item.searchTerms.map(normalize);
+  const terms = [...baseTerms, ...extraTerms];
 
   if (q === title || q === slug) return 100;
+  // Direct hit on extra keyword (e.g. "propositie" -> "Een sterk merk neerzetten")
+  if (extraTerms.includes(q)) return 95;
   if (title.startsWith(q) && q.length >= 3) return 90;
   if (terms.includes(q)) return 85;
+  if (extraTerms.some((k) => k.startsWith(q) || q.startsWith(k))) return 82;
   if (q.length >= 3 && title.includes(q)) return 75;
   if (q.length >= 3 && terms.some((t) => t.startsWith(q) || t.includes(q))) return 65;
   if (q.length >= 5 && (q.includes(title) || terms.some((t) => t.length >= 4 && q.includes(t))))
@@ -95,7 +116,8 @@ export function scoreItem(query: string, item: Searchable): number {
   const fuzzy = Math.max(hitTitle * 70, hitTerms * 55);
   if (fuzzy >= 25) return Math.round(fuzzy);
 
-  const descWords = normalize(item.shortDescription).split(" ");
+  const introText = item.korteIntro || item.shortIntro || item.shortDescription;
+  const descWords = normalize(introText).split(" ");
   const hitDesc =
     qWords.filter((w) => w.length >= 4 && descWords.some((d) => d.startsWith(w))).length /
     qWords.length;
